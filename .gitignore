@@ -1,0 +1,11 @@
+# virtual env
+projEnv/
+
+# python cache
+__pycache__/
+*.pyc
+
+# output
+output/
+performance/
+plate_sheet/
