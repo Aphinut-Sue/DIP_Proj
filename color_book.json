@@ -1,0 +1,67 @@
+{
+  "palette_name": "Stunt_Card_50",
+  "description": "50-color palette used for stunt card image generation. Colors are grouped by visual hue families for easier processing and analysis.",
+  "colors": [
+
+    { "color_id": 1, "hex": "#000000", "group": "Neutral" },
+    { "color_id": 2, "hex": "#353535", "group": "Neutral" },
+    { "color_id": 3, "hex": "#666666", "group": "Neutral" },
+    { "color_id": 4, "hex": "#D4D4D4", "group": "Neutral" },
+    { "color_id": 5, "hex": "#FFFFFF", "group": "Neutral" },
+
+    { "color_id": 6, "hex": "#FFBABA", "group": "Red" },
+    { "color_id": 7, "hex": "#FF7B7B", "group": "Red" },
+    { "color_id": 8, "hex": "#FF5252", "group": "Red" },
+    { "color_id": 9, "hex": "#FF0000", "group": "Red" },
+    { "color_id": 10, "hex": "#A70000", "group": "Red" },
+
+    { "color_id": 11, "hex": "#FF6A00", "group": "Orange" },
+    { "color_id": 12, "hex": "#FF7F00", "group": "Orange" },
+    { "color_id": 13, "hex": "#FF8C00", "group": "Orange" },
+    { "color_id": 14, "hex": "#FFA500", "group": "Orange" },
+    { "color_id": 15, "hex": "#FFB347", "group": "Orange" },
+
+    { "color_id": 16, "hex": "#FFD700", "group": "Yellow" },
+    { "color_id": 17, "hex": "#FFE033", "group": "Yellow" },
+    { "color_id": 18, "hex": "#FFEA70", "group": "Yellow" },
+    { "color_id": 19, "hex": "#FFF176", "group": "Yellow" },
+    { "color_id": 20, "hex": "#FFF59D", "group": "Yellow" },
+
+    { "color_id": 21, "hex": "#98F797", "group": "Green" },
+    { "color_id": 22, "hex": "#6CF16B", "group": "Green" },
+    { "color_id": 23, "hex": "#49E048", "group": "Green" },
+    { "color_id": 24, "hex": "#1FC600", "group": "Green" },
+    { "color_id": 25, "hex": "#089000", "group": "Green" },
+
+    { "color_id": 26, "hex": "#307B1C", "group": "DarkGreen" },
+    { "color_id": 27, "hex": "#296A0D", "group": "DarkGreen" },
+    { "color_id": 28, "hex": "#014709", "group": "DarkGreen" },
+    { "color_id": 29, "hex": "#003804", "group": "DarkGreen" },
+    { "color_id": 30, "hex": "#022902", "group": "DarkGreen" },
+
+    { "color_id": 31, "hex": "#CFECF7", "group": "Cyan" },
+    { "color_id": 32, "hex": "#A0D9EF", "group": "Cyan" },
+    { "color_id": 33, "hex": "#62C1E5", "group": "Cyan" },
+    { "color_id": 34, "hex": "#20A7DB", "group": "Cyan" },
+    { "color_id": 35, "hex": "#1C96C5", "group": "Cyan" },
+
+    { "color_id": 36, "hex": "#0066CC", "group": "Blue" },
+    { "color_id": 37, "hex": "#0059B3", "group": "Blue" },
+    { "color_id": 38, "hex": "#004080", "group": "Blue" },
+    { "color_id": 39, "hex": "#003366", "group": "Blue" },
+    { "color_id": 40, "hex": "#001A33", "group": "Blue" },
+
+    { "color_id": 41, "hex": "#FFAED7", "group": "Pink" },
+    { "color_id": 42, "hex": "#FF77BC", "group": "Pink" },
+    { "color_id": 43, "hex": "#D16AFF", "group": "Purple" },
+    { "color_id": 44, "hex": "#BB44F0", "group": "Purple" },
+    { "color_id": 45, "hex": "#9614D0", "group": "Purple" },
+
+    { "color_id": 46, "hex": "#DEBCB2", "group": "Brown" },
+    { "color_id": 47, "hex": "#D5A294", "group": "Brown" },
+    { "color_id": 48, "hex": "#BB877A", "group": "Brown" },
+    { "color_id": 49, "hex": "#66442C", "group": "Brown" },
+    { "color_id": 50, "hex": "#4C2B21", "group": "Brown" }
+
+  ]
+}
