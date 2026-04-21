@@ -2,3 +2,4 @@ opencv-python
 numpy
 matplotlib
 openpyxl
+scikit-image
