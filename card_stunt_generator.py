@@ -7,6 +7,7 @@ import string
 
 from openpyxl import Workbook
 from openpyxl.styles import Alignment
+from datetime import datetime
 
 # import metrics.py functions
 from metrics import evaluate, save_report
@@ -746,6 +747,10 @@ if __name__ == "__main__":
     if not os.path.exists(COLOR_BOOK_PATH):
         raise FileNotFoundError(f"Color book not found: {COLOR_BOOK_PATH}")
 
+    # =====================================================
+    # DATE SETUP
+    # =====================================================
+    DATE_FORMAT = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     # =====================================================
     # 2. USER INPUT
@@ -889,7 +894,7 @@ if __name__ == "__main__":
 
     report_filename = (
         os.path.splitext(os.path.basename(IMAGE_PATH))[0]
-        + "_report.txt"
+        + "_report_" + DATE_FORMAT + ".txt"
     )
 
     report_path = os.path.join(PERFORMANCE_DIR, report_filename)
@@ -931,7 +936,7 @@ if __name__ == "__main__":
 
     plate_filename = (
         os.path.splitext(os.path.basename(IMAGE_PATH))[0]
-        + "_plates.xlsx"
+        + "_plates_" + DATE_FORMAT + ".xlsx"
     )
 
     plate_path = os.path.join(plate_dir, plate_filename)
@@ -951,7 +956,7 @@ if __name__ == "__main__":
     
     grid_filename = (
         os.path.splitext(os.path.basename(IMAGE_PATH))[0]
-        + "_grid.png"
+        + "_grid" + DATE_FORMAT + ".png"
     )
     
     grid_path = os.path.join(OUTPUT_DIR, grid_filename)
