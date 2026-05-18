@@ -1,0 +1,256 @@
+{
+    "palette_name": "Stunt_Card_50_v2",
+    "description": "50-color palette for stunt card image generation. Includes human skin tones and a broad range of vivid hues for crowd display visuals.",
+    "colors": [
+        {
+            "color_id": 1,
+            "hex": "#000000",
+            "group": "Neutral"
+        },
+        {
+            "color_id": 2,
+            "hex": "#3A3A3A",
+            "group": "Neutral"
+        },
+        {
+            "color_id": 3,
+            "hex": "#787878",
+            "group": "Neutral"
+        },
+        {
+            "color_id": 4,
+            "hex": "#C8C8C8",
+            "group": "Neutral"
+        },
+        {
+            "color_id": 5,
+            "hex": "#FFFFFF",
+            "group": "Neutral"
+        },
+        {
+            "color_id": 6,
+            "hex": "#FFCEA0",
+            "group": "Skin"
+        },
+        {
+            "color_id": 7,
+            "hex": "#E8A87C",
+            "group": "Skin"
+        },
+        {
+            "color_id": 8,
+            "hex": "#C47F50",
+            "group": "Skin"
+        },
+        {
+            "color_id": 9,
+            "hex": "#8D5130",
+            "group": "Skin"
+        },
+        {
+            "color_id": 10,
+            "hex": "#FF3333",
+            "group": "Red"
+        },
+        {
+            "color_id": 11,
+            "hex": "#CC0000",
+            "group": "Red"
+        },
+        {
+            "color_id": 12,
+            "hex": "#880000",
+            "group": "Red"
+        },
+        {
+            "color_id": 13,
+            "hex": "#FF7A00",
+            "group": "Orange"
+        },
+        {
+            "color_id": 14,
+            "hex": "#FF9A3C",
+            "group": "Orange"
+        },
+        {
+            "color_id": 15,
+            "hex": "#CC5500",
+            "group": "Orange"
+        },
+        {
+            "color_id": 16,
+            "hex": "#FFD700",
+            "group": "Yellow"
+        },
+        {
+            "color_id": 17,
+            "hex": "#FFE566",
+            "group": "Yellow"
+        },
+        {
+            "color_id": 18,
+            "hex": "#FFF3A0",
+            "group": "Yellow"
+        },
+        {
+            "color_id": 19,
+            "hex": "#A8F5A8",
+            "group": "LightGreen"
+        },
+        {
+            "color_id": 20,
+            "hex": "#66DD66",
+            "group": "LightGreen"
+        },
+        {
+            "color_id": 21,
+            "hex": "#22BB22",
+            "group": "LightGreen"
+        },
+        {
+            "color_id": 22,
+            "hex": "#1A7A1A",
+            "group": "DarkGreen"
+        },
+        {
+            "color_id": 23,
+            "hex": "#0D4D0D",
+            "group": "DarkGreen"
+        },
+        {
+            "color_id": 24,
+            "hex": "#052A05",
+            "group": "DarkGreen"
+        },
+        {
+            "color_id": 25,
+            "hex": "#00EEFF",
+            "group": "Cyan"
+        },
+        {
+            "color_id": 26,
+            "hex": "#00BBCC",
+            "group": "Cyan"
+        },
+        {
+            "color_id": 27,
+            "hex": "#008899",
+            "group": "Cyan"
+        },
+        {
+            "color_id": 28,
+            "hex": "#CCF0FF",
+            "group": "LightBlue"
+        },
+        {
+            "color_id": 29,
+            "hex": "#66CCFF",
+            "group": "LightBlue"
+        },
+        {
+            "color_id": 30,
+            "hex": "#1199EE",
+            "group": "LightBlue"
+        },
+        {
+            "color_id": 31,
+            "hex": "#0055CC",
+            "group": "Blue"
+        },
+        {
+            "color_id": 32,
+            "hex": "#003899",
+            "group": "Blue"
+        },
+        {
+            "color_id": 33,
+            "hex": "#001A55",
+            "group": "Blue"
+        },
+        {
+            "color_id": 34,
+            "hex": "#CC88FF",
+            "group": "Purple"
+        },
+        {
+            "color_id": 35,
+            "hex": "#9933EE",
+            "group": "Purple"
+        },
+        {
+            "color_id": 36,
+            "hex": "#6600BB",
+            "group": "Purple"
+        },
+        {
+            "color_id": 37,
+            "hex": "#3D0077",
+            "group": "Purple"
+        },
+        {
+            "color_id": 38,
+            "hex": "#FFAAD4",
+            "group": "Pink"
+        },
+        {
+            "color_id": 39,
+            "hex": "#FF55AA",
+            "group": "Pink"
+        },
+        {
+            "color_id": 40,
+            "hex": "#CC1177",
+            "group": "Pink"
+        },
+        {
+            "color_id": 41,
+            "hex": "#FF99AA",
+            "group": "Rose"
+        },
+        {
+            "color_id": 42,
+            "hex": "#EE4455",
+            "group": "Rose"
+        },
+        {
+            "color_id": 43,
+            "hex": "#E8D5A0",
+            "group": "Tan"
+        },
+        {
+            "color_id": 44,
+            "hex": "#C8A85A",
+            "group": "Tan"
+        },
+        {
+            "color_id": 45,
+            "hex": "#AA7755",
+            "group": "Brown"
+        },
+        {
+            "color_id": 46,
+            "hex": "#774433",
+            "group": "Brown"
+        },
+        {
+            "color_id": 47,
+            "hex": "#442211",
+            "group": "Brown"
+        },
+        {
+            "color_id": 48,
+            "hex": "#AAFFCC",
+            "group": "Mint"
+        },
+        {
+            "color_id": 49,
+            "hex": "#44DDAA",
+            "group": "Mint"
+        },
+        {
+            "color_id": 50,
+            "hex": "#FFEE00",
+            "group": "Gold"
+        }
+    ]
+}

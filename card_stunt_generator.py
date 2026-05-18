@@ -739,7 +739,7 @@ if __name__ == "__main__":
     # =====================================================
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-    COLOR_BOOK_PATH = os.path.join(BASE_DIR, "color_book.json")
+    COLOR_BOOK_PATH = os.path.join(BASE_DIR, "color_book.json") # Change color book here
     OUTPUT_DIR = os.path.join(BASE_DIR, "output")
     PERFORMANCE_DIR = os.path.join(BASE_DIR, "performance")
     IMAGE_DIR = os.path.join(BASE_DIR, "images")

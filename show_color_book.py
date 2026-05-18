@@ -93,7 +93,7 @@ def display_color_book(colors):
 if __name__ == "__main__":
 
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    COLOR_BOOK_PATH = os.path.join(BASE_DIR, "color_book.json")
+    COLOR_BOOK_PATH = os.path.join(BASE_DIR, "color_book.json") # Change color book here
 
     colors = load_color_book_json(COLOR_BOOK_PATH)
 
