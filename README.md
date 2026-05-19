@@ -89,6 +89,8 @@ After generation, the full grid is displayed and the viewer starts:
 Enter plate (A1 etc), 'full', 'nogrid', or 'quit':
 ```
 
+(Please close the current window before use these command.)
+
 | Command | Action |
 |---------|--------|
 | `A1`, `B12`, etc. | Show that specific plate with color IDs overlaid |
