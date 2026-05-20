@@ -140,11 +140,11 @@ python show_color_book.py
 
 The full grid is always **25 rows × 50 columns** of plates, labeled rows A–Y and columns 1–50. The card layout you select controls how many physical cards make up each plate:
 
-| Layout | Cards per plate | Grid resolution (R×C) | Picture resolution |
-|--------|----------------|-----------------|-----------------|
-| 1:16 (4×4) | 16 | 100 × 200 cards | 200 × 200 cards |
-| 1:20 (4×5) | 20 | 100 × 250 cards | 200 × 250 cards
-| 1:25 (5×5) | 25 | 125 × 250 cards | 250 × 250 cards
+| Layout | Cards per plate | Picture resolution |
+|--------|----------------|-----------------|
+| 1:16 (4×4) | 16 | 100 × 200 cards |
+| 1:20 (4×5) | 20 | 100 × 250 cards |
+| 1:25 (5×5) | 25 | 125 × 250 cards |
 
 Each plate in the Excel sheet is labeled (e.g. `-A1-`) followed by rows of color IDs that correspond to entries in `color_book.json`.
 
