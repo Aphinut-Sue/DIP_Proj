@@ -33,8 +33,8 @@ def load_image(path):
     if img is None:
         raise FileNotFoundError(path)
 
-    # BGR → RGB
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
     return img
 
 
@@ -272,18 +272,12 @@ def create_card_grid(color_indices, palette):
 # -----------------------------
 def split_into_plates(color_indices, cards_per_row, cards_per_column):
 
-    h, w = color_indices.shape
-
-    # รวม 2 pixel → 1 card
-    color_indices = color_indices.reshape(h//2, 2, w)
-    color_indices = color_indices[:, 0, :]  # ใช้แถวบน
-
     plates = color_indices.reshape(
         PLATE_ROWS,
         cards_per_row,
         PLATE_COLS,
         cards_per_column
-    ).swapaxes(1,2)
+    ).swapaxes(1, 2)
 
     return plates
 
@@ -293,22 +287,20 @@ def split_into_plates(color_indices, cards_per_row, cards_per_column):
 # -----------------------------
 def display_card_grid(card_grid, show_plate_lines=True):
 
-    plt.figure(figsize=(TOTAL_COLS/20, TOTAL_ROWS/20))
+    plt.figure(figsize=(TOTAL_COLS / 20, TOTAL_ROWS / 20))
 
     plt.imshow(card_grid.astype(np.uint8))
 
     if show_plate_lines:
 
-        display_rows = TOTAL_ROWS
-
-        for y in range(0, display_rows, cards_per_row*2):
+        for y in range(0, TOTAL_ROWS, cards_per_row):
             plt.axhline(y - 0.5, linewidth=0.3, color='black', alpha=0.5)
 
         for x in range(0, TOTAL_COLS, cards_per_column):
             plt.axvline(x - 0.5, linewidth=0.3, color='black', alpha=0.5)
 
-    xticks = np.arange(cards_per_column/2, TOTAL_COLS, cards_per_column)
-    yticks = np.arange(cards_per_row, TOTAL_ROWS, cards_per_row * 2)
+    xticks = np.arange(cards_per_column / 2, TOTAL_COLS, cards_per_column)
+    yticks = np.arange(cards_per_row / 2, TOTAL_ROWS, cards_per_row)
 
     plate_title = f"1:{cards_per_row * cards_per_column}"
 
@@ -345,40 +337,33 @@ def display_specific_plate(plates, color_book, position):
 
     plate = plates[row_idx][col_idx]
 
-    # -------------------------
-    # 🔥 ขยายเป็น 1×2 (vertical)
-    # -------------------------
-    plate_expanded = np.repeat(plate, 2, axis=0)
+    fig, ax = plt.subplots(figsize=(6, 6))
 
-    fig, ax = plt.subplots(figsize=(6,10))  # สูงขึ้น
-
-    h, w = plate_expanded.shape
+    h, w = plate.shape
 
     plate_img = np.zeros((h, w, 3), dtype=np.uint8)
 
     for r in range(h):
         for c in range(w):
 
-            idx = plate_expanded[r, c]
+            idx = plate[r, c]
             rgb = color_book[idx]["rgb"]
 
             plate_img[r, c] = rgb
 
-            # แสดงเลขเฉพาะ "แถวบน" ของแต่ละคู่
-            if r % 2 == 0:
-                color = "white" if np.mean(rgb) < 128 else "black"
+            color = "white" if np.mean(rgb) < 128 else "black"
 
-                ax.text(
-                    c, r + 0.5,
-                    str(idx + 1),
-                    ha="center", va="center",
-                    color=color,
-                    fontsize=12,
-                    fontweight="bold"
-                )
+            ax.text(
+                c, r,
+                str(idx + 1),
+                ha="center", va="center",
+                color=color,
+                fontsize=14,
+                fontweight="bold"
+            )
 
     ax.imshow(plate_img)
-    ax.set_title(f"Plate {position} (1x2)")
+    ax.set_title(f"Plate {position}")
     ax.axis("off")
 
     plt.show()
@@ -437,6 +422,184 @@ def export_plates_to_excel(plates, cards_per_row, cards_per_column, filename="pl
     wb.save(filename)
 
     print(f"\nExcel exported → {filename}")
+
+
+# -----------------------------
+# DRAW UI HINT TEXT ON FRAME
+# -----------------------------
+def draw_ui_text(img):
+
+    lines = [
+        "Drag: select area",
+        "ENTER: confirm (no selection = auto crop)",
+        "U: undo | R: reset"
+    ]
+
+    y0 = 25
+
+    for i, text in enumerate(lines):
+        y = y0 + i * 25
+
+        # shadow
+        cv2.putText(img, text, (10, y),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.6, (0, 0, 0), 3, cv2.LINE_AA)
+
+        # foreground
+        cv2.putText(img, text, (10, y),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.6, (255, 255, 255), 1, cv2.LINE_AA)
+
+    return img
+
+
+# -----------------------------
+# USER SELECT CROP (FIXED RATIO)
+# -----------------------------
+def user_select_crop_fixed(img, target_w, target_h):
+
+    print("\nDrag mouse to crop | ENTER=confirm | U=undo | R=reset")
+
+    img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    base = img_bgr.copy()
+    display = base.copy()
+
+    aspect = target_w / target_h
+
+    drawing = False
+    x0, y0 = 0, 0
+    x1, y1 = 0, 0
+
+    history = []
+
+    def mouse(event, x, y, flags, param):
+        nonlocal drawing, x0, y0, x1, y1, display
+
+        if event == cv2.EVENT_LBUTTONDOWN:
+            drawing = True
+            x0, y0 = x, y
+
+        elif event == cv2.EVENT_MOUSEMOVE and drawing:
+            w = x - x0
+            h = int(abs(w) / aspect)
+
+            if y >= y0:
+                y1 = y0 + h
+            else:
+                y1 = y0 - h
+
+            x1 = x
+
+            display = base.copy()
+            cv2.rectangle(display, (x0, y0), (x1, y1), (0, 255, 0), 2)
+
+        elif event == cv2.EVENT_LBUTTONUP:
+            drawing = False
+            history.append((x0, y0, x1, y1))
+
+    cv2.namedWindow("Crop")
+    cv2.setMouseCallback("Crop", mouse)
+
+    while True:
+        temp = display.copy()
+        temp = draw_ui_text(temp)
+        cv2.imshow("Crop", temp)
+        key = cv2.waitKey(1) & 0xFF
+
+        if key == 13:  # ENTER
+            break
+
+        elif key == ord('u'):  # UNDO
+            if history:
+                history.pop()
+                if history:
+                    x0, y0, x1, y1 = history[-1]
+                    display = base.copy()
+                    cv2.rectangle(display, (x0, y0), (x1, y1), (0, 255, 0), 2)
+                else:
+                    display = base.copy()
+
+        elif key == ord('r'):  # RESET
+            history.clear()
+            display = base.copy()
+
+    cv2.destroyAllWindows()
+
+    if not history:
+        print("Auto crop (center, fixed aspect ratio)")
+
+        h, w = img.shape[:2]
+        target_ratio = target_w / target_h
+        img_ratio = w / h
+
+        if img_ratio > target_ratio:
+            new_w = int(h * target_ratio)
+            x_start = (w - new_w) // 2
+            x_end = x_start + new_w
+            y_start, y_end = 0, h
+        else:
+            new_h = int(w / target_ratio)
+            y_start = (h - new_h) // 2
+            y_end = y_start + new_h
+            x_start, x_end = 0, w
+
+        return img[y_start:y_end, x_start:x_end]
+
+    x0, y0, x1, y1 = history[-1]
+
+    x_start, x_end = sorted([x0, x1])
+    y_start, y_end = sorted([y0, y1])
+
+    if x_end - x_start <= 0 or y_end - y_start <= 0:
+        print("Invalid crop → using original")
+        return img
+
+    cropped = img[y_start:y_end, x_start:x_end]
+
+    if cropped.size == 0:
+        print("Empty crop → using original")
+        return img
+
+    return cropped
+
+
+# -----------------------------
+# RESIZE KEEP ASPECT (NO STRETCH)
+# -----------------------------
+def resize_keep_aspect(img, target_w, target_h):
+
+    h, w = img.shape[:2]
+
+    scale = min(target_w / w, target_h / h)
+
+    new_w = int(w * scale)
+    new_h = int(h * scale)
+
+    resized = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_AREA)
+
+    canvas = np.zeros((target_h, target_w, 3), dtype=np.uint8)
+    canvas[:] = np.mean(img, axis=(0, 1)).astype(np.uint8)
+
+    y_offset = (target_h - new_h) // 2
+    x_offset = (target_w - new_w) // 2
+
+    canvas[y_offset:y_offset + new_h, x_offset:x_offset + new_w] = resized
+
+    return canvas
+
+
+# -----------------------------
+# FORCE VERTICAL PAIR (SAME COLOR)
+# -----------------------------
+def enforce_vertical_pair(indices):
+
+    h, w = indices.shape
+
+    for r in range(0, h, 2):
+        if r + 1 < h:
+            indices[r + 1] = indices[r]
+
+    return indices
 
 
 # -----------------------------
@@ -526,147 +689,6 @@ def get_user_top_n(max_colors):
         print("Invalid input")
 
 
-def draw_ui_text(img):
-
-    lines = [
-        "Drag: select area",
-        "ENTER: confirm (no selection = auto crop)",
-        "U: undo | R: reset"
-    ]
-
-    y0 = 25
-    for i, text in enumerate(lines):
-        y = y0 + i*25
-
-        # เงาดำ (อ่านง่าย)
-        cv2.putText(img, text, (10, y),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.6, (0,0,0), 3, cv2.LINE_AA)
-
-        # ตัวอักษรจริง
-        cv2.putText(img, text, (10, y),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.6, (255,255,255), 1, cv2.LINE_AA)
-
-    return img
-
-
-# -----------------------------
-# USER SELECT CROP (LIVE + UNDO)
-# -----------------------------
-def user_select_crop_fixed(img, target_w, target_h):
-
-    print("\nDrag mouse to crop | ENTER=confirm | U=undo | R=reset | C=cancel")
-
-    img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-    base = img_bgr.copy()
-    display = base.copy()
-
-    aspect = target_w / target_h
-
-    drawing = False
-    x0, y0 = 0, 0
-    x1, y1 = 0, 0
-
-    history = []  # เก็บ ROI ล่าสุด
-
-    def mouse(event, x, y, flags, param):
-        nonlocal drawing, x0, y0, x1, y1, display
-
-        if event == cv2.EVENT_LBUTTONDOWN:
-            drawing = True
-            x0, y0 = x, y
-
-        elif event == cv2.EVENT_MOUSEMOVE and drawing:
-            w = x - x0
-            h = int(abs(w) / aspect)
-
-            if y >= y0:
-                y1 = y0 + h
-            else:
-                y1 = y0 - h
-
-            x1 = x
-
-            display = base.copy()
-            cv2.rectangle(display, (x0, y0), (x1, y1), (0,255,0), 2)
-
-        elif event == cv2.EVENT_LBUTTONUP:
-            drawing = False
-            history.append((x0, y0, x1, y1))
-
-    cv2.namedWindow("Crop")
-    cv2.setMouseCallback("Crop", mouse)
-
-    while True:
-        temp = display.copy()
-        temp = draw_ui_text(temp)
-        cv2.imshow("Crop", temp)
-        key = cv2.waitKey(1) & 0xFF
-
-        if key == 13:  # ENTER
-            break
-
-        elif key == ord('u'):  # UNDO
-            if history:
-                history.pop()
-                if history:
-                    x0, y0, x1, y1 = history[-1]
-                    display = base.copy()
-                    cv2.rectangle(display, (x0, y0), (x1, y1), (0,255,0), 2)
-                else:
-                    display = base.copy()
-
-        elif key == ord('r'):  # RESET
-            history.clear()
-            display = base.copy()
-
-    cv2.destroyAllWindows()
-
-    if not history:
-        print("Auto crop (center, fixed aspect ratio)")
-
-        h, w = img.shape[:2]
-        target_ratio = target_w / target_h
-        img_ratio = w / h
-
-        if img_ratio > target_ratio:
-            # กว้างเกิน → ตัดซ้ายขวา
-            new_w = int(h * target_ratio)
-            x_start = (w - new_w) // 2
-            x_end = x_start + new_w
-            y_start = 0
-            y_end = h
-        else:
-            # สูงเกิน → ตัดบนล่าง
-            new_h = int(w / target_ratio)
-            y_start = (h - new_h) // 2
-            y_end = y_start + new_h
-            x_start = 0
-            x_end = w
-
-        cropped = img[y_start:y_end, x_start:x_end]
-        return cropped
-
-    x0, y0, x1, y1 = history[-1]
-
-    x_start, x_end = sorted([x0, x1])
-    y_start, y_end = sorted([y0, y1])
-
-    # กันพัง
-    if x_end - x_start <= 0 or y_end - y_start <= 0:
-        print("Invalid crop → using original")
-        return img
-
-    cropped = img[y_start:y_end, x_start:x_end]
-
-    if cropped.size == 0:
-        print("Empty crop → using original")
-        return img
-
-    return cropped
-
-
 # -----------------------------
 # SAVE IMAGE (PIXEL SCALE)
 # -----------------------------
@@ -690,46 +712,6 @@ def save_image(img, path, scale=10):
 
 
 # -----------------------------
-# RESIZE KEEP ASPECT (NO STRETCH)
-# -----------------------------
-def resize_keep_aspect(img, target_w, target_h):
-
-    h, w = img.shape[:2]
-
-    scale = min(target_w / w, target_h / h)
-
-    new_w = int(w * scale)
-    new_h = int(h * scale)
-
-    resized = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_AREA)
-
-    # ใช้สีเฉลี่ยแทนขอบดำ (เนียนกว่า)
-    canvas = np.zeros((target_h, target_w, 3), dtype=np.uint8)
-    canvas[:] = np.mean(img, axis=(0,1)).astype(np.uint8)
-
-    y_offset = (target_h - new_h) // 2
-    x_offset = (target_w - new_w) // 2
-
-    canvas[y_offset:y_offset+new_h, x_offset:x_offset+new_w] = resized
-
-    return canvas
-
-
-# -----------------------------
-# FORCE 2 VERTICAL PIXELS SAME COLOR
-# -----------------------------
-def enforce_vertical_pair(indices):
-
-    h, w = indices.shape
-
-    for r in range(0, h, 2):
-        if r + 1 < h:
-            indices[r+1] = indices[r]
-
-    return indices
-
-
-# -----------------------------
 # MAIN
 # -----------------------------
 if __name__ == "__main__":
@@ -739,7 +721,7 @@ if __name__ == "__main__":
     # =====================================================
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-    COLOR_BOOK_PATH = os.path.join(BASE_DIR, "color_book.json") # Change color book here
+    COLOR_BOOK_PATH = os.path.join(BASE_DIR, "color_book.json")
     OUTPUT_DIR = os.path.join(BASE_DIR, "output")
     PERFORMANCE_DIR = os.path.join(BASE_DIR, "performance")
     IMAGE_DIR = os.path.join(BASE_DIR, "images")
@@ -762,7 +744,7 @@ if __name__ == "__main__":
     # =====================================================
     cards_per_row, cards_per_column = get_card_layout()
 
-    TOTAL_ROWS = PLATE_ROWS * cards_per_row * 2
+    TOTAL_ROWS = PLATE_ROWS * cards_per_row
     TOTAL_COLS = PLATE_COLS * cards_per_column
 
     # =====================================================
@@ -782,22 +764,16 @@ if __name__ == "__main__":
     img = cv2.bilateralFilter(img, 7, 50, 50)
 
     # sharpen
-    smooth = cv2.GaussianBlur(img, (0,0), 1.0)
+    smooth = cv2.GaussianBlur(img, (0, 0), 1.0)
     img = cv2.addWeighted(img, 1.3, smooth, -0.3, 0)
 
     # slight blur before quantization
-    img = cv2.GaussianBlur(img, (3,3), 0.4)
-
+    img = cv2.GaussianBlur(img, (3, 3), 0.4)
 
     # =====================================================
     # USER CROP (FIXED RATIO)
     # =====================================================
-    img = user_select_crop_fixed(
-        img,
-        TOTAL_COLS,
-        TOTAL_ROWS
-    )
-
+    img = user_select_crop_fixed(img, TOTAL_COLS, TOTAL_ROWS)
 
     # =====================================================
     # 4. RESIZE IMAGE TO GRID SIZE
@@ -808,12 +784,10 @@ if __name__ == "__main__":
         interpolation=cv2.INTER_AREA
     )
 
-
     # =====================================================
     # 5. LOAD COLOR BOOK
     # =====================================================
     palette_rgb, palette_lab, color_book = load_color_book_json(COLOR_BOOK_PATH)
-
 
     # =====================================================
     # 6. INITIAL QUANTIZATION (ALL COLORS)
@@ -823,10 +797,6 @@ if __name__ == "__main__":
         palette_rgb,
         palette_lab
     )
-
-    # บังคับ 2 pixel แนวตั้ง = สีเดียวกัน
-    indices_50 = enforce_vertical_pair(indices_50)
-
 
     # =====================================================
     # 7. SELECT TOP COLORS
@@ -839,14 +809,13 @@ if __name__ == "__main__":
     )
 
     top_palette_lab = cv2.cvtColor(
-        top_palette.reshape(1,-1,3),
+        top_palette.reshape(1, -1, 3),
         cv2.COLOR_RGB2LAB
-    ).reshape(-1,3)
+    ).reshape(-1, 3)
 
     index_map = np.array(
         [c["orig_index"] for c in top_colors]
     )
-
 
     # =====================================================
     # 8. FINAL QUANTIZATION
@@ -857,11 +826,7 @@ if __name__ == "__main__":
         top_palette_lab
     )
 
-    # บังคับอีกครั้ง (สำคัญ!)
-    color_indices = enforce_vertical_pair(color_indices)
-
     mapped_indices = index_map[color_indices]
-
 
     # =====================================================
     # 9. COLOR STATISTICS
@@ -873,13 +838,11 @@ if __name__ == "__main__":
 
     print_color_table(final_stats)
 
-
     # =====================================================
     # 10. CREATE CARD GRID
     # =====================================================
     card_grid = create_card_grid(mapped_indices, palette_rgb)
     grid_img = card_grid.astype(np.uint8)
-
 
     # =====================================================
     # 11. PERFORMANCE EVALUATION
@@ -898,7 +861,6 @@ if __name__ == "__main__":
     )
 
     report_path = os.path.join(PERFORMANCE_DIR, report_filename)
-
     image_name = os.path.basename(IMAGE_PATH)
 
     save_report(
@@ -911,22 +873,19 @@ if __name__ == "__main__":
         deltaE_val
     )
 
-
     # =====================================================
     # 12. SPLIT GRID INTO PLATES
     # =====================================================
     plates = split_into_plates(
-    mapped_indices,
-    cards_per_row,
-    cards_per_column
+        mapped_indices,
+        cards_per_row,
+        cards_per_column
     )
-
 
     # =====================================================
     # 13. DISPLAY GRID
     # =====================================================
     display_card_grid(card_grid)
-
 
     # =====================================================
     # 14. EXPORT PLATES TO EXCEL
@@ -948,23 +907,19 @@ if __name__ == "__main__":
         plate_path
     )
 
-
     # =====================================================
     # 15. SAVE GRID IMAGE
     # =====================================================
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    
+
     grid_filename = (
         os.path.splitext(os.path.basename(IMAGE_PATH))[0]
         + "_grid" + DATE_FORMAT + ".png"
     )
-    
-    grid_path = os.path.join(OUTPUT_DIR, grid_filename)
-    
-    # แก้ไขจาก np.repeat(card_grid, 2, axis=0) เป็น card_grid เฉยๆ
-    # เพื่อรักษา aspect ratio ให้ตรงกับที่แสดงใน matplotlib (1:1 สำหรับ layout 4x4)
-    save_image(card_grid, grid_path)
 
+    grid_path = os.path.join(OUTPUT_DIR, grid_filename)
+
+    save_image(card_grid, grid_path)
 
     # =====================================================
     # 16. INTERACTIVE PLATE VIEWER
